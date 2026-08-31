@@ -1,0 +1,464 @@
+const modules = window.AIMS_MODULES || [];
+const params = new URLSearchParams(location.search);
+const currentNum = params.get("module") || "01";
+const current = modules.find(m => m.num === currentNum) || modules[0];
+
+if (!current) throw new Error("No course data found.");
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+  }[c]));
+}
+
+function parseYouTube(url) {
+  try {
+    const u = new URL(url);
+    const list = u.searchParams.get("list");
+    if (list) return { type:"playlist", playlistId:list };
+
+    const host = u.hostname.replace(/^www\./, "");
+    if (host === "youtu.be") {
+      const videoId = u.pathname.replace(/^\//, "").split("/")[0];
+      return { type:"video", videoId };
+    }
+
+    const videoId = u.searchParams.get("v");
+    if (videoId) return { type:"video", videoId };
+  } catch (_) {}
+
+  return { type:"unknown" };
+}
+
+/* -------------------------------
+   Course page content
+-------------------------------- */
+document.title = `${current.num} ${current.title} | AIMS3 Learning Center`;
+document.getElementById("crumbTitle").textContent = current.title;
+document.getElementById("moduleEyebrow").textContent =
+  `MODULE ${current.num} OF ${String(modules.length).padStart(2,"0")}`;
+document.getElementById("courseTitle").textContent = current.title;
+document.getElementById("courseDescription").textContent = current.description;
+document.getElementById("learningFocus").textContent = current.focus;
+document.getElementById("quizButton").href = current.quiz;
+
+const checklist = document.getElementById("checklist");
+current.checklist.forEach(item => {
+  const li = document.createElement("li");
+  li.textContent = item;
+  checklist.appendChild(li);
+});
+
+const moduleList = document.getElementById("moduleList");
+modules.forEach(m => {
+  const a = document.createElement("a");
+  a.className = "module-link" + (m.num === current.num ? " active" : "");
+  a.href = `course.html?module=${m.num}`;
+  a.innerHTML = `<span class="n">${m.num}</span><span class="t">${escapeHtml(m.title)}</span>`;
+  moduleList.appendChild(a);
+});
+
+/* -------------------------------
+   Completion + notes
+-------------------------------- */
+const completeKey = `aims3-complete-${current.num}`;
+const notesKey = `aims3-note-${current.num}`;
+const completeBtn = document.getElementById("markComplete");
+const chip = document.getElementById("courseStatus");
+const value = document.getElementById("completionValue");
+const mini = document.getElementById("miniProgress");
+
+function refreshCompletion() {
+  const done = localStorage.getItem(completeKey) === "1";
+  completeBtn.textContent = done ? "✓ Course completed" : "Mark course complete";
+  completeBtn.classList.toggle("done", done);
+  chip.textContent = done ? "Completed" : "In progress";
+  chip.classList.toggle("done", done);
+  value.textContent = done ? "100%" : "0%";
+  mini.style.width = done ? "100%" : "0%";
+}
+
+completeBtn.addEventListener("click", () => {
+  localStorage.setItem(
+    completeKey,
+    localStorage.getItem(completeKey) === "1" ? "0" : "1"
+  );
+  refreshCompletion();
+});
+refreshCompletion();
+
+const notes = document.getElementById("courseNotes");
+notes.value = localStorage.getItem(notesKey) || "";
+notes.addEventListener("input", () =>
+  localStorage.setItem(notesKey, notes.value)
+);
+
+/* -------------------------------
+   Previous / next course
+-------------------------------- */
+const moduleIndex = modules.findIndex(m => m.num === current.num);
+const prevCourse = document.getElementById("prevCourse");
+const nextCourse = document.getElementById("nextCourse");
+
+if (moduleIndex > 0) {
+  const m = modules[moduleIndex - 1];
+  prevCourse.href = `course.html?module=${m.num}`;
+  prevCourse.innerHTML = `← &nbsp; ${m.num} ${escapeHtml(m.title)}`;
+}
+
+if (moduleIndex < modules.length - 1) {
+  const m = modules[moduleIndex + 1];
+  nextCourse.href = `course.html?module=${m.num}`;
+  nextCourse.innerHTML = `${m.num} ${escapeHtml(m.title)} &nbsp; →`;
+}
+
+/* -------------------------------
+   Static YouTube lesson system
+   No local server / no Python.
+-------------------------------- */
+const ytInfo = parseYouTube(current.course);
+
+const lessonListEl = document.getElementById("lessonList");
+const lessonSummary = document.getElementById("lessonSummary");
+const lessonCurrent = document.getElementById("lessonCurrent");
+const lessonTotal = document.getElementById("lessonTotal");
+const activeLessonNumber = document.getElementById("activeLessonNumber");
+const activeLessonTitle = document.getElementById("activeLessonTitle");
+const lessonStatusMessage = document.getElementById("lessonStatusMessage");
+const lessonSearch = document.getElementById("lessonSearch");
+const prevLessonBtn = document.getElementById("prevLessonBtn");
+const nextLessonBtn = document.getElementById("nextLessonBtn");
+
+let lessons = [];
+let activeIndex = 0;
+let ytPlayer = null;
+let playerReady = false;
+let playlistProbe = null;
+
+function lastLessonKey() {
+  return `aims3-last-lesson-${current.num}`;
+}
+
+function setMessage(text) {
+  lessonStatusMessage.textContent = text || "";
+}
+
+function updateLessonHeader() {
+  lessonTotal.textContent = lessons.length;
+  lessonCurrent.textContent = lessons.length ? activeIndex + 1 : 0;
+
+  prevLessonBtn.disabled = !lessons.length || activeIndex <= 0;
+  nextLessonBtn.disabled = !lessons.length || activeIndex >= lessons.length - 1;
+
+  if (lessons[activeIndex]) {
+    activeLessonNumber.textContent =
+      `LESSON ${String(activeIndex + 1).padStart(2,"0")} OF ${String(lessons.length).padStart(2,"0")}`;
+    activeLessonTitle.textContent = lessons[activeIndex].title;
+  } else {
+    activeLessonNumber.textContent = "LESSON";
+    activeLessonTitle.textContent = "Select a lesson";
+  }
+}
+
+function renderLessons(filter = "") {
+  const query = filter.trim().toLowerCase();
+  lessonListEl.innerHTML = "";
+  let shown = 0;
+
+  lessons.forEach((lesson, index) => {
+    if (query && !lesson.title.toLowerCase().includes(query)) return;
+    shown++;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "lesson-item-v5" + (index === activeIndex ? " active" : "");
+    btn.innerHTML = `
+      <span class="lesson-index-v5">${String(index + 1).padStart(2,"0")}</span>
+      <span class="lesson-name-v5">
+        ${escapeHtml(lesson.title)}
+        <small>${escapeHtml(current.title)} training</small>
+      </span>
+      <span class="lesson-play-icon-v5">${index === activeIndex ? "▶" : "▷"}</span>
+    `;
+    btn.addEventListener("click", () => selectLesson(index, true));
+    lessonListEl.appendChild(btn);
+  });
+
+  if (!shown) {
+    lessonListEl.innerHTML =
+      `<div class="lesson-empty">No lessons match “${escapeHtml(filter)}”.</div>`;
+  }
+}
+
+function selectLesson(index, autoplay = true) {
+  if (!lessons.length) return;
+
+  activeIndex = Math.max(0, Math.min(index, lessons.length - 1));
+  localStorage.setItem(lastLessonKey(), String(activeIndex));
+
+  updateLessonHeader();
+  renderLessons(lessonSearch.value);
+
+  const lesson = lessons[activeIndex];
+
+if (!ytPlayer) {
+  ytPlayer = new YT.Player("coursePlayer", {
+    videoId: lesson.videoId,
+    playerVars: {
+      rel: 0,
+      playsinline: 1,
+      origin: location.origin
+    },
+    events: {
+      onReady: (e) => {
+        playerReady = true;
+
+        if (autoplay) {
+          e.target.playVideo();
+        }
+      },
+      onError: handlePlayerError
+    }
+  });
+}
+else if (playerReady) {
+  if (autoplay) {
+    ytPlayer.loadVideoById(lesson.videoId);
+  } else {
+    ytPlayer.cueVideoById(lesson.videoId);
+  }
+}
+
+  setMessage(`Playing the official ${current.title} training lesson inside the portal.`);
+}
+
+lessonSearch.addEventListener("input", e => renderLessons(e.target.value));
+prevLessonBtn.addEventListener("click", () => selectLesson(activeIndex - 1, true));
+nextLessonBtn.addEventListener("click", () => selectLesson(activeIndex + 1, true));
+
+async function readVideoTitle(videoId, fallback) {
+  /* Public no-key metadata request. If browser policy blocks this,
+     the lesson still works and the fallback title is shown. */
+  try {
+    const watch = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+    const endpoint =
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(watch)}&format=json`;
+
+    const response = await fetch(endpoint, { mode:"cors" });
+    if (!response.ok) throw new Error("metadata unavailable");
+    const data = await response.json();
+    return data.title || fallback;
+  } catch (_) {
+    return fallback;
+  }
+}
+
+async function hydrateTitles(videoIds) {
+
+  // FAST VERSION:
+  // First show the lessons immediately.
+  // Do not wait for YouTube title requests.
+
+  lessons = videoIds.map((videoId, i) => ({
+    videoId,
+    title: `Lesson ${String(i + 1).padStart(2, "0")}`
+  }));
+
+  const saved = Number(localStorage.getItem(lastLessonKey()));
+
+  activeIndex =
+    Number.isInteger(saved) &&
+    saved >= 0 &&
+    saved < lessons.length
+      ? saved
+      : 0;
+
+  lessonSummary.textContent =
+    `${lessons.length} official training video${
+      lessons.length === 1 ? "" : "s"
+    } in this course.`;
+
+  updateLessonHeader();
+  renderLessons();
+
+  if (playerReady && lessons[activeIndex]) {
+    ytPlayer.cueVideoById(lessons[activeIndex].videoId);
+  }
+
+  // Load real YouTube titles later in background.
+  videoIds.forEach(async (id, i) => {
+    const title = await readVideoTitle(
+      id,
+      `Lesson ${String(i + 1).padStart(2, "0")}`
+    );
+
+    if (lessons[i]) {
+      lessons[i].title = title;
+      renderLessons(lessonSearch.value);
+
+      if (i === activeIndex) {
+        updateLessonHeader();
+      }
+    }
+  });
+}
+
+function showStaticHostingNotice() {
+  lessonListEl.innerHTML = `
+    <div class="lesson-error-box">
+      <strong>This is a static/serverless website.</strong><br>
+      For YouTube embedded lessons, open this folder from an approved HTTP/HTTPS web host
+      (company intranet, GitHub Pages, Netlify, Vercel, SharePoint static web hosting, etc.).
+      Direct <b>file://</b> opening may be blocked by YouTube with Error 153 because the browser
+      does not provide a valid website origin/referrer.
+    </div>`;
+  lessonSummary.textContent =
+    "Deploy this static folder to an approved web location; no Python or localhost is required.";
+}
+
+window.onYouTubeIframeAPIReady = function () {
+  if (location.protocol === "file:") {
+    showStaticHostingNotice();
+    return;
+  }
+
+  const playerVars = {
+    rel: 0,
+    playsinline: 1,
+    origin: location.origin
+  };
+
+  if (ytInfo.type === "video") {
+    ytPlayer = new YT.Player("coursePlayer", {
+      videoId: ytInfo.videoId,
+      playerVars,
+      events: {
+        onReady: async e => {
+          playerReady = true;
+          const title = await readVideoTitle(
+            ytInfo.videoId,
+            `${current.title} course video`
+          );
+          lessons = [{ videoId: ytInfo.videoId, title }];
+          updateLessonHeader();
+          renderLessons();
+          lessonSummary.textContent = "1 official training video in this course.";
+        },
+        onError: handlePlayerError
+      }
+    });
+    return;
+  }
+
+  if (ytInfo.type !== "playlist") {
+    lessonListEl.innerHTML =
+      `<div class="lesson-error-box">A valid YouTube course link was not found for this module.</div>`;
+    return;
+  }
+
+/* Visible player will load only after user selects a lesson */
+playerReady = false;
+
+  /* Hidden playlist probe.
+     YouTube itself supplies playlist video IDs; no API key/backend needed. */
+  const probeHost = document.createElement("div");
+  probeHost.id = "playlistProbeStatic";
+  probeHost.style.cssText =
+    "position:fixed;left:-99999px;top:-99999px;width:2px;height:2px;overflow:hidden;";
+  document.body.appendChild(probeHost);
+
+  playlistProbe = new YT.Player("playlistProbeStatic", {
+    playerVars: {
+      ...playerVars,
+      listType: "playlist",
+      list: ytInfo.playlistId
+    },
+    events: {
+      onReady: e => {
+        const tryRead = async (attempt = 0) => {
+          const ids = e.target.getPlaylist?.() || [];
+
+          if (ids.length) {
+            await hydrateTitles(ids);
+            return;
+          }
+
+          if (attempt < 12) {
+            setTimeout(() => tryRead(attempt + 1), 500);
+            return;
+          }
+
+          lessonListEl.innerHTML = `
+            <div class="lesson-error-box">
+              The official playlist opened, but YouTube did not expose the lesson list to this browser.
+              This can be caused by company browser/privacy policy. The course player can still use the
+              official playlist, but a company-approved hosted URL is recommended.
+            </div>`;
+          lessonSummary.textContent = "Playlist lesson list could not be read by this browser.";
+        };
+
+        tryRead();
+      },
+      onError: handlePlayerError
+    }
+  });
+};
+
+function handlePlayerError(event) {
+  let text = "This YouTube lesson could not be played inside the portal.";
+
+  if (event.data === 101 || event.data === 150) {
+    text = "The video owner has disabled embedding for this lesson.";
+  } else if (event.data === 153) {
+    text =
+      "YouTube Error 153: open this static portal from an approved HTTP/HTTPS host instead of file://.";
+  }
+
+  setMessage(text);
+}
+
+/* -------------------------------
+   Mobile navigation
+-------------------------------- */
+(function setupMobileNavigation() {
+  const btn = document.getElementById("mobileMenuBtn");
+  const backdrop = document.getElementById("mobileBackdrop");
+  const sidebar =
+    document.getElementById("courseSidebar") ||
+    document.querySelector("aside.sidebar, .sidebar");
+
+  if (!btn || !backdrop || !sidebar) return;
+
+  function closeMenu() {
+    sidebar.classList.remove("open");
+    backdrop.classList.remove("show");
+    backdrop.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  }
+
+  function openMenu() {
+    sidebar.classList.add("open");
+    backdrop.hidden = false;
+    backdrop.classList.add("show");
+    btn.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  }
+
+  btn.addEventListener("click", () =>
+    sidebar.classList.contains("open") ? closeMenu() : openMenu()
+  );
+
+  backdrop.addEventListener("click", closeMenu);
+  sidebar.addEventListener("click", e => {
+    if (e.target.closest("a")) closeMenu();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeMenu();
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 760) closeMenu();
+  });
+})();

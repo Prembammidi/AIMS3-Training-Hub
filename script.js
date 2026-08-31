@@ -1,0 +1,3 @@
+const boxes=[...document.querySelectorAll('input[data-module]')];
+function update(){let n=0;boxes.forEach(b=>{const k='aims3-complete-'+b.dataset.module;b.checked=localStorage.getItem(k)==='1';if(b.checked)n++;b.onchange=()=>{localStorage.setItem(k,b.checked?'1':'0');update()}});document.getElementById('bar').style.width=(n/15*100)+'%';document.getElementById('progressText').textContent=`${n} of 15 complete (${Math.round(n/15*100)}%)`;}
+document.querySelectorAll('textarea[data-note]').forEach(t=>{let k='aims3-note-'+t.dataset.note;t.value=localStorage.getItem(k)||'';t.oninput=()=>localStorage.setItem(k,t.value)});update();
