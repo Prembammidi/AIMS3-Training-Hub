@@ -11,7 +11,8 @@ window.AIMS_MODULES = [
       "Troubleshoot visibility by checking filters, security and user settings"
     ],
     "course": "https://www.youtube.com/playlist?list=PLNaCSNGk3v08",
-    "quiz": "https://forms.cloud.microsoft/r/iAQ8J7387e"
+    "quiz": "https://forms.cloud.microsoft/r/iAQ8J7387e",
+    "guide": "guides/home-screen.pdf"
   },
   {
     "num": "02",
@@ -25,7 +26,8 @@ window.AIMS_MODULES = [
       "Recognize how equipment records connect to work orders and PM schedules"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7jRHdC6mM_tRCyIxMIfL_gX",
-    "quiz": "https://forms.cloud.microsoft/r/vxgnS5YqaF"
+    "quiz": "https://forms.cloud.microsoft/r/vxgnS5YqaF",
+    "guide": "guides/equipment.pdf"
   },
   {
     "num": "03",
@@ -39,7 +41,8 @@ window.AIMS_MODULES = [
       "Apply labor, material and notes before completion"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7gA2J1OfLJ7vHl4JHSw0UiF",
-    "quiz": "https://forms.cloud.microsoft/r/AYNPr2DKff"
+    "quiz": "https://forms.cloud.microsoft/r/AYNPr2DKff",
+    "guide": "guides/work-orders.pdf"
   },
   {
     "num": "04",
@@ -53,7 +56,8 @@ window.AIMS_MODULES = [
       "Use contract information when evaluating external service"
     ],
     "course": "https://www.youtube.com/playlist?list=PLQUh-you3sjU",
-    "quiz": "https://forms.cloud.microsoft/r/syhva3YSU6"
+    "quiz": "https://forms.cloud.microsoft/r/syhva3YSU6",
+    "guide": "guides/contracts.pdf"
   },
   {
     "num": "05",
@@ -67,7 +71,8 @@ window.AIMS_MODULES = [
       "Relieve/use parts against a work order"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7jFpUVVCOSDRkcT6P6ocHjh",
-    "quiz": "https://forms.cloud.microsoft/r/yUbFF8BKQt"
+    "quiz": "https://forms.cloud.microsoft/r/yUbFF8BKQt",
+    "guide": "guides/parts.pdf"
   },
   {
     "num": "06",
@@ -81,7 +86,8 @@ window.AIMS_MODULES = [
       "Connect purchasing activity to maintenance costs"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7jLMMzN-a2TPnQZqBj05_IG",
-    "quiz": "https://forms.cloud.microsoft/r/771fAphsT3"
+    "quiz": "https://forms.cloud.microsoft/r/771fAphsT3",
+    "guide": "guides/purchasing.pdf"
   },
   {
     "num": "07",
@@ -95,7 +101,8 @@ window.AIMS_MODULES = [
       "Recognize the role of customer-service surveys"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7gwvgU7OcwdoIaayqcvggFG",
-    "quiz": "https://forms.cloud.microsoft/r/23rXZfx559"
+    "quiz": "https://forms.cloud.microsoft/r/23rXZfx559",
+    "guide": "guides/customer-service.pdf"
   },
   {
     "num": "08",
@@ -109,7 +116,8 @@ window.AIMS_MODULES = [
       "Complete the official quiz after the course"
     ],
     "course": "https://www.youtube.com/playlist?list=PLRJ3Wjx5utcc",
-    "quiz": "https://forms.cloud.microsoft/r/fCDCtGA3kk"
+    "quiz": "https://forms.cloud.microsoft/r/fCDCtGA3kk",
+    "guide": "guides/consumables.pdf"
   },
   {
     "num": "09",
@@ -123,7 +131,8 @@ window.AIMS_MODULES = [
       "Protect sensitive operational data when sharing exports"
     ],
     "course": "https://www.youtube.com/playlist?list=PLedHqSNSvhFQ",
-    "quiz": "https://forms.cloud.microsoft/r/UVtEBu1yMQ"
+    "quiz": "https://forms.cloud.microsoft/r/UVtEBu1yMQ",
+    "guide": "guides/export.pdf"
   },
   {
     "num": "10",
@@ -137,7 +146,8 @@ window.AIMS_MODULES = [
       "For mass changes, verify in test before production"
     ],
     "course": "https://www.youtube.com/playlist?list=PLZF079EdTJH0",
-    "quiz": "https://forms.cloud.microsoft/r/yc1CW3XuC"
+    "quiz": "https://forms.cloud.microsoft/r/yc1CW3XuC",
+    "guide": "guides/import.pdf"
   },
   {
     "num": "11",
@@ -151,7 +161,8 @@ window.AIMS_MODULES = [
       "Treat merges and master-data edits as high-impact operations"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7gzkbo-ZSpX1i3XSu6f4Ou4",
-    "quiz": "https://forms.cloud.microsoft/r/771fAphsT3"
+    "quiz": "https://forms.cloud.microsoft/r/771fAphsT3",
+    "guide": "guides/data-managers.pdf"
   },
   {
     "num": "12",
@@ -165,7 +176,8 @@ window.AIMS_MODULES = [
       "Validate defaults and security impact before changing setup"
     ],
     "course": "https://www.youtube.com/playlist?list=PLScLog9FCjUk",
-    "quiz": "https://forms.cloud.microsoft/r/t9e4BVW0hs"
+    "quiz": "https://forms.cloud.microsoft/r/t9e4BVW0hs",
+    "guide": "guides/system-setup.pdf"
   },
   {
     "num": "13",
@@ -179,7 +191,8 @@ window.AIMS_MODULES = [
       "Understand status-change email communication"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7jt3bfYXkEzjCxQ6ECkGd4O",
-    "quiz": "https://forms.cloud.microsoft/r/jiHdkasE4c"
+    "quiz": "https://forms.cloud.microsoft/r/jiHdkasE4c",
+    "guide": "guides/easynet.pdf"
   },
   {
     "num": "14",
@@ -193,7 +206,8 @@ window.AIMS_MODULES = [
       "Save/reuse recurring report configurations"
     ],
     "course": "https://www.youtube.com/playlist?list=PLcWAfAQ2tTYc",
-    "quiz": "https://forms.cloud.microsoft/r/bvVZnhy6QY"
+    "quiz": "https://forms.cloud.microsoft/r/bvVZnhy6QY",
+    "guide": "guides/reports.pdf"
   },
   {
     "num": "15",
@@ -207,6 +221,7 @@ window.AIMS_MODULES = [
       "Complete the official quiz after the course"
     ],
     "course": "https://youtu.be/wIRR6eBawA0?si=MIOrkL0KlIe741XZ",
-    "quiz": "https://forms.cloud.microsoft/r/SNbSh8Dy77"
+    "quiz": "https://forms.cloud.microsoft/r/SNbSh8Dy77",
+    "guide": null
   }
 ];

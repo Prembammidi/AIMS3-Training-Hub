@@ -907,3 +907,9 @@ button, .btn, a.button, .module-link, .lesson-row {
     border-radius: 10px;
   }
 }
+
+/* Space below Open Guide button */
+#guideButton {
+  display: inline-block;
+  margin-bottom: 16px;
+}

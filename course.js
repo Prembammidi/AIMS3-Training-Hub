@@ -2,6 +2,7 @@ const modules = window.AIMS_MODULES || [];
 const params = new URLSearchParams(location.search);
 const currentNum = params.get("module") || "01";
 const current = modules.find(m => m.num === currentNum) || modules[0];
+const guideButton = document.getElementById("guideButton");
 
 if (!current) throw new Error("No course data found.");
 
@@ -65,6 +66,15 @@ document.getElementById("courseTitle").textContent = current.title;
 document.getElementById("courseDescription").textContent = current.description;
 document.getElementById("learningFocus").textContent = current.focus;
 document.getElementById("quizButton").href = current.quiz;
+
+if (current.guide) {
+  guideButton.href = current.guide;
+  guideButton.hidden = false;
+} else {
+  guideButton.removeAttribute("href");
+  guideButton.hidden = true;
+}
+
 openCourseDirect.href = current.course;
 openSelectedDirect.href = current.course;
 
