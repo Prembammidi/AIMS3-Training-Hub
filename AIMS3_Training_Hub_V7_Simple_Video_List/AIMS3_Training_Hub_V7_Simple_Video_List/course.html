@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AIMS3 Course Player</title>
+  <link rel="stylesheet" href="course.css">
+</head>
+<body>
+<div class="prototype-banner">AIMS3 Training Hub • Course + existing Microsoft Forms quiz</div>
+
+<button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Open course navigation" aria-expanded="false">☰</button>
+<div id="mobileBackdrop" class="mobile-backdrop" hidden></div>
+
+<header class="topbar">
+  <a class="brand" href="index.html">AIMS3 <span>Learning Center</span></a>
+  <div class="top-actions">
+    <span id="courseStatus" class="status-chip">In progress</span>
+    <a class="ghost-btn" href="index.html">← Back to dashboard</a>
+  </div>
+</header>
+
+<div class="portal-shell">
+  <aside id="courseSidebar" class="course-nav">
+    <div class="nav-title">COURSE CATALOG</div>
+    <div id="moduleList"></div>
+  </aside>
+
+  <main class="course-main">
+    <section class="crumbs"><a href="index.html">Dashboard</a><span>›</span><span id="crumbTitle">Course</span></section>
+
+    <section class="hero-row">
+      <div>
+        <div id="moduleEyebrow" class="eyebrow">MODULE</div>
+        <h1 id="courseTitle">Loading course…</h1>
+        <p id="courseDescription"></p>
+      </div>
+      <div class="completion-card">
+        <div class="completion-label">Module progress</div>
+        <div class="completion-value" id="completionValue">0%</div>
+        <div class="mini-progress"><span id="miniProgress"></span></div>
+      </div>
+    </section>
+
+    <!-- SIMPLE VIDEO LIST: list first, player second -->
+    <section class="video-lesson-picker">
+      <div class="video-picker-head">
+        <div>
+          <div class="mini-label">COURSE VIDEOS</div>
+          <h2>Choose a training video</h2>
+          <p id="lessonSummary" class="lesson-summary">Getting the official course video list…</p>
+        </div>
+        <a id="openCourseDirect" class="direct-youtube-btn" target="_blank" rel="noopener">Open full course in YouTube ↗</a>
+      </div>
+
+      <div id="lessonList" class="simple-video-list" aria-label="Course video list">
+        <div class="simple-list-loading">Loading video list…</div>
+      </div>
+
+      <div id="lessonStatusMessage" class="lesson-status-message"></div>
+    </section>
+
+    <section class="player-card simple-player-card">
+      <div id="playerPlaceholder" class="player-placeholder">
+        <div class="player-placeholder-icon">▶</div>
+        <h3>Select a video above</h3>
+        <p>The YouTube player loads only after you choose a lesson.</p>
+      </div>
+      <div class="player-wrap" id="playerWrap" hidden>
+        <div id="coursePlayer" class="youtube-player" aria-label="Course video player"></div>
+      </div>
+      <div class="player-toolbar">
+        <div>
+          <strong id="activeLessonTitle">Official course player</strong>
+          <div class="small">If the embedded player is blocked, use the direct YouTube link.</div>
+        </div>
+        <div class="player-actions-simple">
+          <a id="openSelectedDirect" class="ghost-btn" target="_blank" rel="noopener">Open selected video ↗</a>
+          <button id="markComplete" class="primary-btn">Mark course complete</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel">
+        <h2>Learning focus</h2>
+        <p id="learningFocus"></p>
+        <h2>Practical checklist</h2>
+        <ul id="checklist"></ul>
+      </section>
+
+      <aside class="panel notes-panel">
+        <h2>My notes</h2>
+        <p class="small">Saved automatically in this browser.</p>
+        <textarea id="courseNotes" placeholder="Add notes while you watch the course..."></textarea>
+        <a id="quizButton" class="quiz-btn" target="_blank" rel="noopener">Take official quiz ↗</a>
+      </aside>
+    </div>
+
+    <section class="course-footer-nav">
+      <a id="prevCourse" class="nav-course"></a>
+      <a id="nextCourse" class="nav-course right"></a>
+    </section>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="course.js"></script>
+</body>
+</html>
