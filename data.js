@@ -27,7 +27,7 @@ window.AIMS_MODULES = [
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7jRHdC6mM_tRCyIxMIfL_gX",
     "quiz": "https://forms.cloud.microsoft/r/vxgnS5YqaF",
-    "guide": "guides/Equipment.pdf"
+    "guide": "guides/equipment.pdf"
   },
   {
     "num": "03",
