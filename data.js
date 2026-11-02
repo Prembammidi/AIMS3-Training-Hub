@@ -146,7 +146,7 @@ window.AIMS_MODULES = [
       "For mass changes, verify in test before production"
     ],
     "course": "https://www.youtube.com/playlist?list=PLZF079EdTJH0",
-    "quiz": "https://forms.cloud.microsoft/r/yc1CW3XuC",
+    "quiz": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=XvCJrrjlAkK2O--mzOwRyLB0vB7KyfBDjchwLB0UfnVUOVlaRzlFVlhGSzI4RU02M1pTQjE5RktTTSQlQCN0PWcu",
     "guide": "guides/import.pdf"
   },
   {
@@ -161,7 +161,7 @@ window.AIMS_MODULES = [
       "Treat merges and master-data edits as high-impact operations"
     ],
     "course": "https://www.youtube.com/playlist?list=PLSRoFIw80Z7gzkbo-ZSpX1i3XSu6f4Ou4",
-    "quiz": "https://forms.cloud.microsoft/r/771fAphsT3",
+    "quiz": "https://forms.cloud.microsoft/pages/responsepage.aspx?id=XvCJrrjlAkK2O--mzOwRyLB0vB7KyfBDjchwLB0UfnVUMlJGUkVSU0hOWThDSUdORVRIVDhSM0o5WCQlQCN0PWcu&route=shorturl",
     "guide": "guides/data-managers.pdf"
   },
   {
